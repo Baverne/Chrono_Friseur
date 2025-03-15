@@ -1,5 +1,32 @@
-// Get the CSRF token from the meta tag
-const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+// Charge les données à partir du backend
+d3.json("/events").then(events => {
+    // Convertit les dates en objets JavaScript Date
+    events.forEach(d => {
+        d.date = new Date(d.date);
+    });
+
+    // Crée la visualisation initiale avec les données chargées
+    createTimeline(events);
+}).catch(error => {
+    console.error("Erreur lors du chargement des événements:", error);
+});
+
+// Redimensionne le canevas lorsque la fenêtre est redimensionnée
+window.addEventListener("resize", () => {
+    createTimeline();
+});
+
+// Définit la nomenclature des dates
+const dateFormat = d3.timeFormatDefaultLocale({
+    "dateTime": "%A %e %B %Y, %X",
+    "date": "%d/%m/%Y",
+    "time": "%H:%M:%S",
+    "periods": ["AM", "PM"],
+    "days": ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
+    "shortDays": ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
+    "months": ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
+    "shortMonths": ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+});
 
 // Fonction pour créer ou mettre à jour la visualisation
 function createTimeline(events) {
@@ -151,33 +178,33 @@ function createTimeline(events) {
                     .text(d => formatDate(d, scale)),
                 exit => exit.remove()
             );
-        
+
         // if hours are displayed, add graduations labels for minor ticks
         if (pixelsPerDay >= 800) {
             // Ajoute des étiquettes pour les graduations principales
             graduation.selectAll("text.minor-label")
-            .data(minorTicks.range(...domain))
-            .join(
-                enter => enter.append("text")
-                    .attr("class", "minor-label")
-                    .attr("x", d => scale(d))
-                    .attr("y", -20)
-                    .attr("text-anchor", "middle")
-                    .attr("font-size", "12px")
-                    .text(d => formatHour(d, scale)),
-                update => update
-                    .attr("x", d => scale(d))
-                    .text(d => formatHour(d, scale)),
-                exit => exit.remove()
-            );
+                .data(minorTicks.range(...domain))
+                .join(
+                    enter => enter.append("text")
+                        .attr("class", "minor-label")
+                        .attr("x", d => scale(d))
+                        .attr("y", -20)
+                        .attr("text-anchor", "middle")
+                        .attr("font-size", "12px")
+                        .text(d => formatHour(d, scale)),
+                    update => update
+                        .attr("x", d => scale(d))
+                        .text(d => formatHour(d, scale)),
+                    exit => exit.remove()
+                );
 
         }
-        // remove them otherwise 
+        // remove them otherwise
         else {
             graduation.selectAll("text.minor-label").remove();
         }
 
-        
+
 
     }
 
@@ -199,7 +226,7 @@ function createTimeline(events) {
             .on("click", function(event, d) {
                 // Toggle the expanded state
                 d.expanded = !d.expanded;
-    
+
                 if (d.expanded) {
                     //supprime l'eventuel label
                     eventsGroup.selectAll("text.event-label")
@@ -287,7 +314,7 @@ function createTimeline(events) {
                         .attr("width", 50)
                         .attr("height", 20)
                         .attr("fill", "steelblue");
-    
+
                     // Supprime le formulaire
                     eventsGroup.selectAll("foreignObject.eventForm").remove();
 
@@ -319,26 +346,26 @@ function createTimeline(events) {
     }
 
     // Fonction de zoom
-function zoomed(event) {
-    const newXScale = event.transform.rescaleX(timeScale);
+    function zoomed(event) {
+        const newXScale = event.transform.rescaleX(timeScale);
 
-    // Met à jour les graduations avec trois types de ticks
-    addTicks(newXScale);
+        // Met à jour les graduations avec trois types de ticks
+        addTicks(newXScale);
 
-    // Met à jour les rectangles d'événements
-    eventsGroup.selectAll("rect.event")
-        .attr("x", d => newXScale(d.date) - 25);
+        // Met à jour les rectangles d'événements
+        eventsGroup.selectAll("rect.event")
+            .attr("x", d => newXScale(d.date) - 25);
 
-    // Met à jour les étiquettes d'événements
-    eventsGroup.selectAll("text.event-label")
-        .attr("x", d => newXScale(d.date));
+        // Met à jour les étiquettes d'événements
+        eventsGroup.selectAll("text.event-label")
+            .attr("x", d => newXScale(d.date));
 
-    // Met à jour les formulaires d'événements
-    eventsGroup.selectAll("foreignObject.eventForm")
-        .attr("x", d => newXScale(d.date));
+        // Met à jour les formulaires d'événements
+        eventsGroup.selectAll("foreignObject.eventForm")
+            .attr("x", d => newXScale(d.date));
 
-    displayedScale = newXScale; // Update the global displayedScale with the rescaled version
-}
+        displayedScale = newXScale; // Update the global displayedScale with the rescaled version
+    }
 
     // Fonction pour formater les dates en fonction de l'échelle de temps
     function formatDate(date, scale) {
@@ -369,7 +396,7 @@ function zoomed(event) {
         event.preventDefault();
         const [x, y] = d3.pointer(event);
         const date = displayedScale.invert(x - 40); // Convertit la position x en date
-    
+
         // Charge le formulaire depuis le fichier Blade
         fetch(`/eventForm?date=${date.toISOString().split('T')[0]}&title=Créer un événement&descriptionText=oui oui.`)
             .then(response => response.text())
@@ -392,7 +419,7 @@ function zoomed(event) {
                             .html(formHtml),
                         exit => exit.remove()
                     );
-    
+
                 // Ajoute l'écouteur d'événement pour le formulaire
                 document.getElementById('eventForm').addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -416,33 +443,3 @@ function zoomed(event) {
             });
     });
 }
-
-// Définit la nomenclature des dates
-const dateFormat = d3.timeFormatDefaultLocale({
-    "dateTime": "%A %e %B %Y, %X",
-    "date": "%d/%m/%Y",
-    "time": "%H:%M:%S",
-    "periods": ["AM", "PM"],
-    "days": ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
-    "shortDays": ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
-    "months": ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
-    "shortMonths": ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
-});
-
-// Charge les données à partir du fichier CSV des événements
-d3.json("/events").then(events => {
-    // Convertit les dates en objets JavaScript Date
-    events.forEach(d => {
-        d.date = new Date(d.date);
-    });
-
-    // Crée la visualisation initiale avec les données chargées
-    createTimeline(events);
-}).catch(error => {
-    console.error("Erreur lors du chargement du fichier CSV des événements:", error);
-});
-
-// Redimensionne le canevas lorsque la fenêtre est redimensionnée
-window.addEventListener("resize", () => {
-    createTimeline();
-});
