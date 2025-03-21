@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\StoreEventRequest;
 use Illuminate\Support\Facades\Route;
 use App\Models\Event;
 
@@ -25,9 +26,9 @@ Route::get('/events/{id}', function ($id) {
 //     return $event;
 // });
 
-Route::post('/events',    function () {
-    $event = Event::create(request()->all());
-    return $event;
+Route::post('/events',    function (StoreEventRequest $request) {
+    $validated = $request->validated();
+    return $validated;
 });
 
 Route::put('/events/{id}', function ($id) {

@@ -13,4 +13,17 @@ class Event extends Model
     protected $table = 'events';
 
     protected $fillable = ['name', 'date', 'description'];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'date' => 'datetime',
+        ];
+    }
+
 }
