@@ -1,3 +1,6 @@
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
-import * as vis from "vis-timeline/standalone";
-window.vis = vis;
+import {Timeline} from "vis-timeline/esnext";
+import {DataSet} from "vis-data/esnext";
+
+window.Timeline = Timeline;
+window.DataSet = DataSet;

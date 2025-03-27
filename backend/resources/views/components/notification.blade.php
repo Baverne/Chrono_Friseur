@@ -12,7 +12,7 @@
         }
     }"
      @notify.window="add($event)"
-     class="fixed top-0 right-0 flex w-full max-w-sm flex-col space-y-4 pr-4 pt-4 sm:justify-start z-20"
+     class="fixed top-0 right-0 flex w-full max-w-sm flex-col space-y-4 pr-1.5 pt-1.5 z-50 sm:justify-start md:bottom-0 md:top-auto md:left-0 md:right-auto md:pl-4 md:pr-0 md:pb-4 md:pt-0"
      role="status"
      aria-live="polite"
 >
@@ -23,7 +23,7 @@
                 show: false,
                 typeDisplay: {
                     info: 'Information',
-                    success: 'Réussite',
+                    success: 'Effectué',
                     error: 'Erreur'
                 },
                 init() {

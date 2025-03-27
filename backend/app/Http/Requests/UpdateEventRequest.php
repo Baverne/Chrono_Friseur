@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateEventRequest extends FormRequest
 {
@@ -11,7 +12,8 @@ class UpdateEventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // TODO: changer lors de l'implémentation de User
+        return true;
     }
 
     /**
@@ -22,7 +24,12 @@ class UpdateEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:2000',
+            'date' => [
+                'required',
+                Rule::date()->format('Y-m-d H:i'),
+            ]
         ];
     }
 }
