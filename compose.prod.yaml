@@ -1,0 +1,56 @@
+services:
+  caddy:
+    build:
+      context: .
+      dockerfile: ./docker/caddy/Dockerfile
+    restart: unless-stopped # Automatically restart unless the service is explicitly stopped
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      # Mount the data folder to '/srv/storage' inside the container.
+      # -----------------------------------------------------------
+      # This volume stores persistent data like uploaded files and cache.
+      # The ':ro' option mounts it as read-only in the 'web' service because Nginx only needs to read these files.
+      # The 'php-fpm' service mounts the same volume without ':ro' to allow write operations.
+      # -----------------------------------------------------------
+      - ./data:/srv/storage:ro
+    environment:
+      TZ: "${APP_TIMEZONE}:Europe/Paris"
+    networks:
+      - default
+    ports:
+      # Map port 80 inside the container to the port specified by 'WEB_PORT' on the host machine.
+      # -----------------------------------------------------------
+      # This allows external access to the Nginx web server running inside the container.
+      # For example, if 'WEB_PORT' is set to '8080', accessing 'http://localhost:8080' will reach the application.
+      # -----------------------------------------------------------
+      - "${WEB_PORT:-80}:80"
+    depends_on:
+      php-fpm:
+        condition: service_healthy  # Wait for php-fpm health check
+
+  php-fpm:
+    # For the php-fpm service, we will create a custom image to install the necessary PHP extensions and setup proper permissions.
+    build:
+      context: .
+      dockerfile: ./docker/php-fpm/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./data:/srv/storage  # Mount the storage volume
+    env_file:
+      - .env
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD-SHELL", "php-fpm-healthcheck || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  # Attach the service to the 'default' network.
+  # -----------------------------------------------------------
+  # This custom network allows all services within it to communicate using their service names as hostnames.
+  # For example, 'caddy' can connect to 'php-fpm' by using 'php-fpm' as the hostname.
+  # -----------------------------------------------------------
+  default:
