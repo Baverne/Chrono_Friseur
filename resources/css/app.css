@@ -1,0 +1,86 @@
+/*
+Voir la doc d'installation de Tailwind dans Laravel pour comprendre
+https://tailwindcss.com/docs/installation/framework-guides/laravel/vite
+*/
+@import 'tailwindcss';
+
+/*
+En gros c'est les fichiers scannés par Tailwind quand on compile le style.
+Il va regarder quelles classes CSS sont utilisées dedans pour les ajouter au fichier .css compilé,
+comme ça il est pas trop gros.
+*/
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+
+/*Voir https://tailwindcss.com/docs/font-family*/
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --animate-wiggle: wiggle 0.3s ease-in-out infinite;
+    @keyframes wiggle {
+        0%,
+        100% {
+            transform: rotate(-3deg);
+        }
+        50% {
+            transform: rotate(3deg);
+        }
+    }
+}
+
+@layer components {
+    .bg-dots {
+        background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(0,0,0,0.07)'/%3E%3C/svg%3E");
+    }
+
+    /* See https://alpinejs.dev/directives/cloak */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    .vis-timeline {
+        border: 0 !important;
+    }
+
+    .vis-item.vis-box {
+        border-radius: var(--radius-md) !important;
+    }
+
+    .vis-item {
+        border-color:     var(--color-slate-200) !important;
+        background-color: var(--color-slate-200) !important;
+        color:            var(--color-gray-900) !important;
+    }
+
+    .vis-item:hover:not(.vis-dot):not(.vis-line) {
+        border-color:     var(--color-slate-100) !important;
+        background-color: var(--color-slate-100) !important;
+    }
+
+    .vis-item.vis-selected:not(.vis-dot):not(.vis-line), .vis-item.vis-selected:not(.vis-dot):not(.vis-line):focus {
+        outline:          var(--color-indigo-500) 2px solid !important;
+        outline-offset:   calc(1px * -1);
+        border-color:     var(--color-slate-100) !important;
+        background-color: var(--color-slate-100) !important;
+        color:            var(--color-gray-900) !important;
+    }
+
+    .vis-item-content {
+        position: relative;
+    }
+
+    .flatpickr-calendar {
+        border-radius: var(--radius-md) !important;
+        outline: var(--color-gray-300) 1px solid !important;
+        outline-offset: calc(1px * -1);
+        box-shadow: none !important;
+    }
+
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+        background-color: var(--color-indigo-500) !important;
+        border-color: var(--color-indigo-500) !important;
+    }
+}

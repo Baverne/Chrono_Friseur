@@ -1,0 +1,25 @@
+{
+    auto_https off
+    servers {
+        trusted_proxies static private_ranges
+    }
+}
+
+:80 {
+    file_server
+    root * /srv/public
+    try_files {path} {path}/ /index.php?{query}
+    php_fastcgi php-fpm:9000
+    encode zstd gzip
+    log {
+        output stdout
+
+        format filter {
+            # Redact multiple sensitive cookies.
+            request>headers>Cookie cookie {
+                replace session REDACTED
+                delete secret
+            }
+        }
+    }
+}

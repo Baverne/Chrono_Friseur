@@ -11,8 +11,8 @@ Pour une installation simplifiée de ces dépendances sur Windows ou MacOS, il e
 
 ### Premier lancement
 
-Une fois ce dépôt **cloné**, ouvrir un terminal et se déplacer dans le dossier `backend/` puis exécuter les commandes
-suivantes pour
+Une fois ce dépôt **cloné**, ouvrir un terminal et se déplacer dans son dossier puis exécuter les commandes
+suivantes pour :
 
 1. Installer les dépendances PHP
 2. Installer les dépendances JS 
@@ -22,7 +22,6 @@ suivantes pour
 6. Lancer la compilation du CSS et du JS
 
 ```shell
-cd backend
 composer install
 npm install
 php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -36,7 +35,6 @@ npm run dev
 Enfin, dans un nouveau terminal, lancer le serveur de développement.
 
 ```shell
-cd backend
 php artisan serve
 ```
 
@@ -54,7 +52,6 @@ nécessaires :
 4. Lancer la compilation du CSS et du JS
 
 ```shell
-cd backend
 composer install
 npm install
 php artisan migrate
@@ -68,7 +65,6 @@ Vérifier si des changements ont été effectués dans le fichier `.env.example`
 Enfin, dans un nouveau terminal, lancer le serveur de développement.
 
 ```shell
-cd backend
 php artisan serve
 ```
 
