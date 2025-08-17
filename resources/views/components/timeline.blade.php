@@ -211,6 +211,62 @@
                     this.csvValidationMessage = 'Une erreur est survenue lors de la validation du fichier.';
                 }
             }
+        },
+        async importCsvFile() {
+            if (!this.csvFile || this.csvValidationState !== 'success') return;
+
+            this.eventRequestInProgress = true;
+
+            const formData = new FormData();
+            formData.append('csv_file', this.csvFile);
+
+            try {
+                const response = await axios.post('/events/import', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                // Show success notification
+                this.$dispatch('notify', {
+                    type: 'success', 
+                    content: response.data.message
+                });
+
+                // Show warnings if any
+                if (response.data.warnings && response.data.warnings.length > 0) {
+                    setTimeout(() => {
+                        this.$dispatch('notify', {
+                            type: 'warning',
+                            content: 'Avertissements: ' + response.data.warnings.join(', ')
+                        });
+                    }, 2000);
+                }
+
+                // Close the flyout and reset state
+                this.openCsvImportFlyout = false;
+                this.csvFile = null;
+                this.csvValidationState = null;
+                this.csvValidationMessage = '';
+                this.csvFileInfo = null;
+
+                // Refresh the timeline data
+                this.getData();
+
+            } catch (error) {
+                let errorMessage = 'Une erreur est survenue lors de l\'import.';
+                
+                if (error.response && error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                }
+
+                this.$dispatch('notify', {
+                    type: 'error',
+                    content: errorMessage
+                });
+            } finally {
+                this.eventRequestInProgress = false;
+            }
         }
     }"
     @timeline-select.window="showEvent($event)"
