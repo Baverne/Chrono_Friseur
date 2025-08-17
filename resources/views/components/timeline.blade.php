@@ -162,12 +162,20 @@
         showSearch() {
             this.openSearchFlyout = true;
             this.mode = 'search';
+        },
+        openCsvImportFlyout: false,
+        csvFile: null,
+        isDragOver: false,
+        showCsvImport() {
+            this.openCsvImportFlyout = true;
+            this.mode = 'csvImport';
         }
     }"
     @timeline-select.window="showEvent($event)"
     @add-event.window="showAddForm($event)"
     @list-tags.window="showListTags()"
     @open-search.window="showSearch()"
+    @open-csv-import.window="showCsvImport()"
     class="w-full h-full flex items-center bg-white rounded-lg"
 >
     <!-- Loading overlay -->
@@ -218,6 +226,12 @@
         </x-slot>
 
         <x-timeline.search/>
+    </x-flyout>
+
+    <!-- CSV Import flyout -->
+    <x-flyout x-model="openCsvImportFlyout">
+        <x-slot name="title">Importer un fichier CSV</x-slot>
+        <x-csv-import-flyout />
     </x-flyout>
 
     <!-- Bottom elements -->

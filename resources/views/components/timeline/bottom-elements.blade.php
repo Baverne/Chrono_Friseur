@@ -67,6 +67,16 @@
 
                 <span class="hidden sm:inline" aria-hidden="true">&nbsp;Événement</span>
             </button>
+
+            <!-- CSV Import button -->
+            <button x-tooltip="'Importer un CSV'"
+                    @click="$el.blur(); $dispatch('open-csv-import')" type="button"
+                    class="text-sm font-semibold flex items-center justify-center whitespace-nowrap h-min rounded-full p-3 bg-green-600 text-white shadow hover:shadow-xl hover:bg-green-500 outline-0 outline-transparent focus:outline-2 focus:outline-offset-2 focus:outline-green-700 md:text-base md:shadow-none md:hover:shadow-none transition"
+            >
+                <x-icons.document-arrow-up size="size-5 md:size-6"/>
+
+                <span class="hidden sm:inline" aria-hidden="true">&nbsp;CSV</span>
+            </button>
         </div>
     </div>
 </div>
