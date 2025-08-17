@@ -1,7 +1,0 @@
-Wrong;Headers;Structure
-Événement 1;Description manquante;2024-03-15
-Événement 2;Description;2024-03-20;tag1,tag2;colonne en trop
-Événement 3;Description;date invalide;tag1
-Événement 4;Description;2024-13-45;tag1
-;Description sans nom;2024-03-25;tag1
-Événement 6;

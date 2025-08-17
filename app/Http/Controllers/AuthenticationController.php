@@ -89,29 +89,4 @@ class AuthenticationController extends Controller
 
         return redirect()->intended('/');
     }
-
-    /**
-     * Developer login bypass for local development.
-     * Only available when APP_ENV=local and APP_DEBUG=true.
-     */
-    public function devLogin(Request $request): RedirectResponse
-    {
-        // Double check we're in development environment
-        if (config('app.env') !== 'local' || !config('app.debug')) {
-            abort(404);
-        }
-
-        // Create or get a development user
-        $user = User::firstOrCreate(
-            ['email' => 'dev@localhost'],
-            [
-                'name' => 'Developer',
-                'username' => 'developer',
-                'github_id' => null,
-                'password' => null,
-            ]
-        );
-
-        return $this->loginAndRedirect($user);
-    }
 }

@@ -13,11 +13,6 @@ Route::controller(AuthenticationController::class)->group(function () {
     Route::get('/auth/github', 'redirectToGithub')->name('auth.github');
     Route::get('/auth/github/callback', 'handleGithubCallback');
     Route::get('/logout', 'logout')->name('logout')->middleware('auth');
-    
-    // Developer login bypass (only in local environment)
-    if (config('app.env') === 'local' && config('app.debug')) {
-        Route::post('/dev/login', 'devLogin')->name('dev.login');
-    }
 });
 
 /*
