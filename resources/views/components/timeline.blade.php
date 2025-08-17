@@ -166,9 +166,51 @@
         openCsvImportFlyout: false,
         csvFile: null,
         isDragOver: false,
+        csvValidationState: null, // 'success', 'error', or null
+        csvValidationMessage: '',
+        csvFileInfo: null,
         showCsvImport() {
             this.openCsvImportFlyout = true;
             this.mode = 'csvImport';
+            // Reset validation state when opening
+            this.csvValidationState = null;
+            this.csvValidationMessage = '';
+            this.csvFileInfo = null;
+        },
+        async validateCsvFile() {
+            if (!this.csvFile) return;
+
+            // Reset validation state
+            this.csvValidationState = null;
+            this.csvValidationMessage = '';
+            this.csvFileInfo = null;
+
+            const formData = new FormData();
+            formData.append('csv_file', this.csvFile);
+
+            try {
+                const response = await axios.post('/events/import/validate', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                // Set success state
+                this.csvValidationState = 'success';
+                this.csvValidationMessage = response.data.message;
+                this.csvFileInfo = response.data.file_info;
+
+            } catch (error) {
+                // Set error state
+                this.csvValidationState = 'error';
+                
+                if (error.response && error.response.data.errors) {
+                    const errors = error.response.data.errors;
+                    this.csvValidationMessage = Object.values(errors).flat().join(' ');
+                } else {
+                    this.csvValidationMessage = 'Une erreur est survenue lors de la validation du fichier.';
+                }
+            }
         }
     }"
     @timeline-select.window="showEvent($event)"

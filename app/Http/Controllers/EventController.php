@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SearchEventRequest;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Http\Requests\ImportCsvRequest;
 use App\Models\Event;
 use App\Services\EventService;
 use Illuminate\Database\Eloquent\Collection;
@@ -87,5 +88,46 @@ class EventController extends Controller
             'name',
             'color',
         ]);
+    }
+
+    /**
+     * Validate CSV file before import
+     */
+    public function validateCsvImport(ImportCsvRequest $request): JsonResponse
+    {
+        // If we reach here, validation passed
+        $file = $request->file('csv_file');
+        
+        // Get file info
+        $fileInfo = [
+            'name' => $file->getClientOriginalName(),
+            'size' => $file->getSize(),
+            'mime_type' => $file->getMimeType(),
+            'lines' => $this->countCsvLines($file),
+        ];
+
+        return response()->json([
+            'message' => 'Le fichier CSV est valide et prêt à être importé.',
+            'file_info' => $fileInfo,
+        ]);
+    }
+
+    /**
+     * Count lines in CSV file
+     */
+    private function countCsvLines($file): int
+    {
+        $handle = fopen($file->getRealPath(), 'r');
+        if (!$handle) {
+            return 0;
+        }
+
+        $lineCount = 0;
+        while (fgets($handle) !== false) {
+            $lineCount++;
+        }
+        fclose($handle);
+
+        return $lineCount;
     }
 }

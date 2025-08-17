@@ -10,6 +10,9 @@
             let files = $event.dataTransfer.files;
             if (files.length > 0) {
                 csvFile = files[0];
+                csvValidationState = null;
+                csvValidationMessage = '';
+                csvFileInfo = null;
             }
         "
     >
@@ -28,7 +31,7 @@
                     type="file" 
                     accept=".csv" 
                     class="sr-only"
-                    @change="csvFile = $event.target.files[0]"
+                    @change="csvFile = $event.target.files[0]; csvValidationState = null; csvValidationMessage = ''; csvFileInfo = null;"
                 >
             </div>
             <p class="mt-1 text-xs text-gray-500">
@@ -49,11 +52,56 @@
             <button 
                 type="button"
                 class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                @click="csvFile = null; document.getElementById('csv-file').value = ''"
+                @click="csvFile = null; csvValidationState = null; csvValidationMessage = ''; csvFileInfo = null; document.getElementById('csv-file').value = ''"
             >
                 <x-icons.x-mark class="h-3 w-3 mr-1" />
                 Supprimer
             </button>
+
+            <!-- Validation Button -->
+            <button 
+                type="button"
+                class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                @click="validateCsvFile()"
+            >
+                Valider le fichier
+            </button>
+        </div>
+    </div>
+
+    <!-- Validation Results -->
+    <div x-show="csvValidationState" class="space-y-3">
+        <!-- Success State -->
+        <div x-show="csvValidationState === 'success'" class="bg-green-50 border border-green-200 rounded-md p-4">
+            <div class="flex">
+                <x-icons.check-circle class="h-5 w-5 text-green-400" />
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800">Fichier valide !</h3>
+                    <div class="mt-2 text-sm text-green-700">
+                        <p x-text="csvValidationMessage"></p>
+                        <div x-show="csvFileInfo" class="mt-2">
+                            <p><strong>Détails du fichier :</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li x-text="`Lignes: ${csvFileInfo?.lines || 0}`"></li>
+                                <li x-text="`Taille: ${csvFileInfo?.size ? (csvFileInfo.size / 1024 / 1024).toFixed(2) + ' MB' : 'N/A'}`"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div x-show="csvValidationState === 'error'" class="bg-red-50 border border-red-200 rounded-md p-4">
+            <div class="flex">
+                <x-icons.x-circle class="h-5 w-5 text-red-400" />
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">Fichier invalide</h3>
+                    <div class="mt-2 text-sm text-red-700">
+                        <p x-text="csvValidationMessage"></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -81,14 +129,14 @@
         <button 
             type="button"
             class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            @click="$dialog.close(); csvFile = null"
+            @click="$dialog.close(); csvFile = null; csvValidationState = null; csvValidationMessage = ''; csvFileInfo = null;"
         >
             Annuler
         </button>
         <button 
             type="button"
             class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            :disabled="!csvFile"
+            :disabled="!csvFile || csvValidationState !== 'success'"
             @click="alert('Import CSV functionality will be implemented in the next step!')"
         >
             Importer

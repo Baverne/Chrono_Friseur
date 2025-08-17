@@ -24,6 +24,18 @@
                 </div>
             </a>
 
+            @if(config('app.env') === 'local' && config('app.debug'))
+                <form action="{{ route('dev.login') }}" method="POST"
+                      class="flex items-center justify-center w-full mt-4 px-6 py-4 bg-orange-50/40 backdrop-blur-xs shadow-lg overflow-hidden rounded-md hover:bg-orange-50/60 hover:shadow-2xl focus:outline-2 sm:max-w-md transition z-20"
+                >
+                    @csrf
+                    <button type="submit" class="flex items-center space-x-2 mx-2 p-2">
+                        <x-icons.log-in size="size-8"/>
+                        <span class="font-bold text-orange-800">Connexion développeur</span>
+                    </button>
+                </form>
+            @endif
+
             @if($errors->any())
                 <div
                     class="flex w-full mt-6 p-4 opacity-100 rounded-md bg-red-50/50 backdrop-blur-xs shadow sm:max-w-md"
