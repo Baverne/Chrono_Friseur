@@ -63,4 +63,10 @@ Route::middleware(['auth'])->group(function () {
      */
         'tags' => TagController::class,
     ]);
+
+    // CSV Import routes
+    Route::post('/events/import/validate', [EventController::class, 'validateCsvImport'])
+        ->name('events.import.validate');
+    Route::post('/events/import', [EventController::class, 'importCsv'])
+        ->name('events.import');
 });
